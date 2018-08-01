@@ -57,7 +57,7 @@ const TopBar = (props) => {
         >
           {title}
         </Text>
-        { more &&
+        { more ?
           <ToggleIcon
             style={styles.more}
             onPress={() => onMorePress()}
@@ -66,7 +66,7 @@ const TopBar = (props) => {
             iconOn="more-horiz"
             theme={theme.more}
             size={25}
-          />
+          /> : null
         }
       </View>
     </LinearGradient>

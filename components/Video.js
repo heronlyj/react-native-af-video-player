@@ -377,8 +377,8 @@ class Video extends Component {
       >
         <StatusBar hidden={fullScreen} />
         {
-          ((loading && placeholder) || currentTime < 0.01) &&
-          <Image resizeMode="cover" style={styles.image} {...checkSource(placeholder)} />
+          ((loading && placeholder) || currentTime < 0.01) ?
+          <Image resizeMode="cover" style={styles.image} {...checkSource(placeholder)} /> : null
         }
         <VideoPlayer
           {...checkSource(url)}
