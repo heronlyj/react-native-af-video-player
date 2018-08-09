@@ -65,12 +65,16 @@ class ScrollView extends Component {
       bounces,
       children,
       onScroll,
+      contentInset,
       scrollEventThrottle,
       ...scrollProps
     } = this.props
     return (
       <RNScrollView
         {...scrollProps}
+        contentInsetAdjustmentBehavior='never'
+        automaticallyAdjustContentInsets={false}
+        contentInset={fullscreen ? {} : contentInset}
         ref={(scroll) => { this.scroll = scroll }}
         bounces={fullscreen ? !fullscreen : bounces}
         onScroll={(event) => {

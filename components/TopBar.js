@@ -10,33 +10,43 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient'
 import { ToggleIcon } from './'
+import { isIphoneX } from 'react-native-iphone-x-helper';
 import { checkSource } from './utils'
 
 const backgroundColor = 'transparent'
 
-const styles = StyleSheet.create({
-  container: {
-    height: 35,
-    justifyContent: 'center'
-  },
-  row: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    alignItems: 'center'
-  },
-  title: {
-    flex: 1,
-    backgroundColor,
-    paddingLeft: 10,
-    paddingRight: 35,
-    fontSize: 16
-  },
-  logo: {
-    marginLeft: 5,
-    height: 25,
-    width: 25
-  }
-})
+const getStyles = fullscreen => {
+
+    const flag = isIphoneX() && fullscreen
+
+    return StyleSheet.create({
+        container: {
+            height: flag ? 55 : 35,
+            paddingTop: flag ? 20 : 0,
+            paddingHorizontal: flag ? 34 : 0,
+            justifyContent: 'flex-end',
+        },
+        row: {
+          flexDirection: 'row',
+          alignSelf: 'center',
+          alignItems: 'center'
+        },
+        title: {
+          flex: 1,
+          backgroundColor,
+          paddingLeft: 10,
+          paddingRight: 35,
+          fontSize: 16
+        },
+        logo: {
+          marginLeft: 5,
+          height: 25,
+          width: 25
+        }
+      })
+}
+
+
 
 const TopBar = (props) => {
   const {
@@ -44,12 +54,30 @@ const TopBar = (props) => {
     more,
     title,
     theme,
-    onMorePress
+    fullscreen,
+    onMorePress,
+    onExitPress,
   } = props
+
+  const styles = getStyles(fullscreen)
+
   return (
     <LinearGradient colors={['rgba(0,0,0,0.75)', 'rgba(0,0,0,0)']} style={styles.container}>
       <View style={styles.row}>
-        { logo ? <Image style={styles.logo} resizeMode="contain" {...checkSource(logo)} /> : null }
+        {/* { full ? <Image style={styles.logo} resizeMode="contain" {...checkSource(logo)} /> : null } */}
+        {
+          fullscreen
+            ? <ToggleIcon
+              style={styles.logo}
+              onPress={() => onExitPress()}
+              paddingLeft
+              iconOff="arrow-back"
+              iconOn="arrow-back"
+              theme={theme.more}
+              size={25}
+            />
+            : null
+        }
         <Text
           style={[styles.title, { color: theme.title }]}
           numberOfLines={1}
@@ -57,7 +85,7 @@ const TopBar = (props) => {
         >
           {title}
         </Text>
-        { more ?
+        {more ?
           <ToggleIcon
             style={styles.more}
             onPress={() => onMorePress()}

@@ -121,6 +121,7 @@ class Controls extends Component {
       loading,
       logo,
       more,
+      onExitPress,
       onMorePress,
       title,
       progress,
@@ -139,6 +140,8 @@ class Controls extends Component {
             title={title}
             logo={logo}
             more={more}
+            fullscreen={fullscreen}
+            onExitPress={() => onExitPress()}
             onMorePress={() => onMorePress()}
             theme={{ title: theme.title, more: theme.more }}
           />

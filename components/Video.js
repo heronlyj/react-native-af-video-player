@@ -16,26 +16,79 @@ import Orientation from 'react-native-orientation'
 import Icons from 'react-native-vector-icons/MaterialIcons'
 import { Controls } from './'
 import { checkSource } from './utils'
+import { isIphoneX } from 'react-native-iphone-x-helper';
 const Win = Dimensions.get('window')
 const backgroundColor = '#000'
 
-const styles = StyleSheet.create({
-  background: {
-    backgroundColor,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 98
-  },
-  fullScreen: {
-    ...StyleSheet.absoluteFillObject
-  },
-  image: {
-    ...StyleSheet.absoluteFillObject,
-    width: undefined,
-    height: undefined,
-    zIndex: 99
-  }
-})
+
+const getStyles = fullScreen => {
+
+    const flag = fullScreen && isIphoneX()
+
+    console.log(StyleSheet.absoluteFillObject)
+
+    if (flag) {
+        return StyleSheet.create({
+            background: {
+              backgroundColor,
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 98
+            },
+            fullScreen: {
+              ...StyleSheet.absoluteFillObject,
+            //   left: flag ? 34 : 0,
+            //   right: flag ? 34 : 0,
+            },
+            image: {
+              ...StyleSheet.absoluteFillObject,
+              width: undefined,
+              height: undefined,
+              left: flag ? 34 : 0,
+              right: flag ? 34 : 0,
+              zIndex: 99
+            }
+          })
+    } else {
+        return StyleSheet.create({
+            background: {
+              backgroundColor,
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 98
+            },
+            fullScreen: {
+              ...StyleSheet.absoluteFillObject,
+            },
+            image: {
+              ...StyleSheet.absoluteFillObject,
+              width: undefined,
+              height: undefined,
+              zIndex: 99
+            }
+          })
+    }
+}
+
+// const styles = StyleSheet.create({
+//   background: {
+//     backgroundColor,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     zIndex: 98
+//   },
+//   fullScreen: {
+//     ...StyleSheet.absoluteFillObject,
+//     width: Win.height
+//     paddingHorizontal: isIphoneX() ? 34 : 0,
+//   },
+//   image: {
+//     ...StyleSheet.absoluteFillObject,
+//     width: undefined,
+//     height: undefined,
+//     zIndex: 99
+//   }
+// })
 
 const defaultTheme = {
   title: '#FFF',
@@ -89,7 +142,7 @@ class Video extends Component {
   onLoad(data) {
     if (!this.state.loading) return
     this.props.onLoad(data)
-    const { height, width } = data.naturalSize   
+    const { height, width } = data.naturalSize
     const ratio = height === 'undefined' && width === 'undefined' ?
       (9 / 16) : (height / width)
     const inlineHeight = this.props.lockRatio ?
@@ -309,7 +362,11 @@ class Video extends Component {
       height: this.animInline,
       alignSelf: 'stretch'
     }
+
     const textStyle = { color: 'white', padding: 10 }
+
+    const styles = getStyles(fullScreen)
+
     return (
       <Animated.View
         style={[styles.background, fullScreen ? styles.fullScreen : inline]}
@@ -365,6 +422,8 @@ class Video extends Component {
       ...theme
     }
 
+    const styles = getStyles(fullScreen)
+
     return (
       <Animated.View
         style={[
@@ -419,6 +478,7 @@ class Video extends Component {
           title={title}
           more={!!onMorePress}
           onMorePress={() => onMorePress()}
+          onExitPress={() => this.toggleFS()}
           theme={setTheme}
           inlineOnly={inlineOnly}
         />
