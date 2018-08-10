@@ -105,8 +105,10 @@ const defaultTheme = {
 }
 
 class Video extends Component {
+
   constructor(props) {
     super(props)
+    
     this.state = {
       paused: !props.autoPlay,
       muted: false,
@@ -119,6 +121,7 @@ class Video extends Component {
       seeking: false,
       renderError: false
     }
+
     this.animInline = new Animated.Value(Win.width * 0.5625)
     this.animFullscreen = new Animated.Value(Win.width * 0.5625)
     this.BackHandler = this.BackHandler.bind(this)
