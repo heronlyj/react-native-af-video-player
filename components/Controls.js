@@ -17,17 +17,24 @@ import {
 import { isIphoneX } from 'react-native-iphone-x-helper';
 
 const getStyles = fullscreen => {
-  
-  const flag = isIphoneX() && fullscreen
+
+  const flag = isIphoneX() && (fullscreen || false)
 
   return StyleSheet.create({
     container: {
       ...StyleSheet.absoluteFillObject,
-      zIndex: 99
+      zIndex: 99,
     },
     contentContainer: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 99,
       paddingHorizontal: flag ? 34 : 0,
       paddingBottom: flag ? 34 : 0,
+    },
+    progressContentContainer: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 99,
+        paddingHorizontal: flag ? 68 : 0,
     },
     flex: {
       flex: 1
@@ -42,7 +49,7 @@ class Controls extends Component {
       hideControls: false,
       seconds: 0,
       seeking: false,
-      scale: 1, 
+      scale: 1,
       animControls: 1,
       progressbar: 2,
     }
@@ -99,7 +106,7 @@ class Controls extends Component {
     const styles = getStyles(this.props.fullscreen)
     return (
       <Touchable style={styles.container} onPress={() => this.showControls()}>
-        <View style={styles.contentContainer}>
+        <View style={styles.progressContentContainer}>
           <ProgressBar theme={this.props.theme.progress} progress={this.props.progress} />
         </View>
       </Touchable>
@@ -107,6 +114,7 @@ class Controls extends Component {
   }
 
   loading() {
+    const styles = getStyles(this.props.fullscreen)
     return (
       <View style={styles.container}>
         <Loading theme={this.props.theme.loading} />
@@ -179,7 +187,7 @@ class Controls extends Component {
   render() {
     if (this.props.loading) return this.loading()
     if (this.state.hideControls) {
-      return this.hiddenControls(fullscreen)
+      return this.hiddenControls(this.props.fullscreen)
     }
     return this.displayedControls()
   }
