@@ -14,15 +14,26 @@ import {
   ProgressBar
 } from './'
 
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 99
-  },
-  flex: {
-    flex: 1
-  }
-})
+import { isIphoneX } from 'react-native-iphone-x-helper';
+
+const getStyles = fullscreen => {
+  
+  const flag = isIphoneX() && fullscreen
+
+  return StyleSheet.create({
+    container: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 99
+    },
+    contentContainer: {
+      paddingHorizontal: flag ? 34 : 0,
+      paddingBottom: flag ? 34 : 0,
+    },
+    flex: {
+      flex: 1
+    }
+  })
+}
 
 class Controls extends Component {
   constructor() {
@@ -30,11 +41,11 @@ class Controls extends Component {
     this.state = {
       hideControls: false,
       seconds: 0,
-      seeking: false
+      seeking: false,
+      scale: 1, 
+      animControls: 1,
+      progressbar: 2,
     }
-    this.animControls = new Animated.Value(1)
-    this.scale = new Animated.Value(1)
-    this.progressbar = new Animated.Value(2)
   }
 
   componentDidMount() {
@@ -42,7 +53,6 @@ class Controls extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer)
   }
 
   onSeek(pos) {
@@ -58,49 +68,40 @@ class Controls extends Component {
   }
 
   setTimer() {
-    this.timer = setInterval(() => {
-      switch (true) {
-        case this.state.seeking:
-          // do nothing
-          break
-        case this.props.paused:
-          if (this.state.seconds > 0) this.setState({ seconds: 0 })
-          break
-        case this.state.hideControls:
-          break
-        case this.state.seconds > 3:
-          this.hideControls()
-          break
-        default:
-          this.setState({ seconds: this.state.seconds + 1 })
-      }
-    }, 1000)
+    switch (true) {
+      case this.state.seeking:
+        // do nothing
+        break
+      case this.props.paused:
+        if (this.state.seconds > 0) {
+          this.setState({ seconds: 0 })
+        }
+        break
+      case this.state.hideControls:
+        break
+      case this.state.seconds > 3:
+        this.hideControls()
+        break
+      default:
+        this.setState({ seconds: this.state.seconds + 1 })
+    }
   }
 
   showControls() {
-    this.setState({ hideControls: false }, () => {
-      this.progressbar.setValue(2)
-      Animated.parallel([
-        Animated.timing(this.animControls, { toValue: 1, duration: 200 }),
-        Animated.timing(this.scale, { toValue: 1, duration: 200 })
-      ]).start()
-    })
+    this.setState({ hideControls: false, animControls: 1, scale: 1 })
   }
 
   hideControls() {
-    Animated.parallel([
-      Animated.timing(this.animControls, { toValue: 0, duration: 200 }),
-      Animated.timing(this.scale, { toValue: 0.25, duration: 200 })
-    ]).start(() => this.setState({ hideControls: true, seconds: 0 }))
+    this.setState({ hideControls: true, seconds: 0, animControls: 0, scale: 0.25 })
   }
 
   hiddenControls() {
-    Animated.timing(this.progressbar, { toValue: 0, duration: 200 }).start()
+    const styles = getStyles(this.props.fullscreen)
     return (
       <Touchable style={styles.container} onPress={() => this.showControls()}>
-        <Animated.View style={[styles.container, { paddingBottom: this.progressbar }]}>
+        <View style={styles.contentContainer}>
           <ProgressBar theme={this.props.theme.progress} progress={this.props.progress} />
-        </Animated.View>
+        </View>
       </Touchable>
     )
   }
@@ -133,9 +134,11 @@ class Controls extends Component {
 
     const { center, ...controlBar } = theme
 
+    const styles = getStyles(fullscreen)
+
     return (
       <Touchable onPress={() => this.hideControls()}>
-        <Animated.View style={[styles.container, { opacity: this.animControls }]}>
+        <View style={[styles.container, { opacity: this.state.animControls }]}>
           <TopBar
             title={title}
             logo={logo}
@@ -145,14 +148,14 @@ class Controls extends Component {
             onMorePress={() => onMorePress()}
             theme={{ title: theme.title, more: theme.more }}
           />
-          <Animated.View style={[styles.flex, { transform: [{ scale: this.scale }] }]}>
+          <View style={styles.flex}>
             <PlayButton
               onPress={() => this.props.togglePlay()}
               paused={paused}
               loading={loading}
               theme={center}
             />
-          </Animated.View>
+          </View>
           <ControlBar
             toggleFS={() => this.props.toggleFS()}
             toggleMute={() => this.props.toggleMute()}
@@ -168,7 +171,7 @@ class Controls extends Component {
             theme={controlBar}
             inlineOnly={inlineOnly}
           />
-        </Animated.View>
+        </View>
       </Touchable>
     )
   }
@@ -176,7 +179,7 @@ class Controls extends Component {
   render() {
     if (this.props.loading) return this.loading()
     if (this.state.hideControls) {
-      return this.hiddenControls()
+      return this.hiddenControls(fullscreen)
     }
     return this.displayedControls()
   }

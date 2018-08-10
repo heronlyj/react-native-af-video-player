@@ -37,8 +37,8 @@ const getStyles = fullScreen => {
             },
             fullScreen: {
               ...StyleSheet.absoluteFillObject,
-            //   left: flag ? 34 : 0,
-            //   right: flag ? 34 : 0,
+              left: flag ? 34 : 0,
+              right: flag ? 34 : 0,
             },
             image: {
               ...StyleSheet.absoluteFillObject,
@@ -437,7 +437,7 @@ class Video extends Component {
         <StatusBar hidden={fullScreen} />
         {
           ((loading && placeholder) || currentTime < 0.01) ?
-          <Image resizeMode="cover" style={styles.image} {...checkSource(placeholder)} /> : null
+          <Image resizeMode={resizeMode} style={styles.image} {...checkSource(placeholder)} /> : null
         }
         <VideoPlayer
           {...checkSource(url)}
