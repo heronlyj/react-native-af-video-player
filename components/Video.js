@@ -25,8 +25,6 @@ const getStyles = fullScreen => {
 
     const flag = fullScreen && isIphoneX()
 
-    console.log(StyleSheet.absoluteFillObject)
-
     if (flag) {
         return StyleSheet.create({
             background: {
